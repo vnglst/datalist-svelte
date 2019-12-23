@@ -1,13 +1,21 @@
 <script>
   import { countries } from "./data";
+
   let country = "";
   let number = "";
+  let isValidating = false;
   $: phone = country + number;
   const regex = /^\+(?:[0-9] ?){6,14}[0-9]$/;
-  $: invalid = !regex.test(phone);
+  $: isValid = regex.test(phone);
+  $: invalid = isValidating && !regex.test(phone);
+
+  function startValidating() {
+    isValidating = true;
+  }
 
   function handleSubmit(e) {
-    alert(`You entered ${phone}`);
+    startValidating();
+    if (isValid) alert(`You entered ${phone}`);
   }
 </script>
 
@@ -33,6 +41,7 @@
       type="text"
       list="countrycodes"
       id="country-code"
+      on:blur={startValidating}
       aria-invalid={invalid} />
     <datalist id="countrycodes">
       {#each countries as country}
@@ -44,6 +53,7 @@
     <label htmlFor="number">Number</label>
     <input
       bind:value={number}
+      on:blur={startValidating}
       id="number"
       type="phone"
       placeholder="12345678"
